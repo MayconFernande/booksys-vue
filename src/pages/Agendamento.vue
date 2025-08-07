@@ -138,8 +138,9 @@ onMounted(async () => {
   await fetchSchedules()
   try {
     const response = await fetch('http://127.0.0.1:8000/api/services/')
-    console.log('Serviços recebidos da API:', data)
     const data = await response.json()
+    console.log('Serviços recebidos da API:', data)
+    const defaultImg = '/src/assets/images/default-user.png'
     services.value = data.map(service => ({
       id: service.id,
       name: service.name,
@@ -149,11 +150,12 @@ onMounted(async () => {
       professionals: (service.professionals || []).map(p => ({
         id: p.id,
         name: p.name,
-        src_img: p.src_img || defaultUserImg
+        src_img: p.src_img || defaultImg
       }))
     }))
   } catch (err) {
     error.value = 'Erro ao carregar serviços.'
+    console.error(err)
   }
 })
 

@@ -31,7 +31,7 @@ onMounted(async () => {
     if (!response.ok) throw new Error('Erro ao carregar os serviços')
     
     const data = await response.json()
-
+    
     items.value = data.map(service => ({
       title: service.name,
       text: service.description || 'Descrição não disponível',

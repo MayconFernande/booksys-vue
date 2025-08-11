@@ -50,6 +50,7 @@
         </div>
         <div class="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
           <!-- Ícones de redes sociais -->
+          
           <Social />
 
         </div>
@@ -86,8 +87,6 @@ import Social from '../components/Social.vue'
 const navigation = [
   { name: 'Quem Somos', href: '/sobre', current: false },
   { name: 'Serviços', href: '/servicos', current: false },
-  { name: 'Contato', href: '/contato', current: false },
-
 ]   
 
 </script>

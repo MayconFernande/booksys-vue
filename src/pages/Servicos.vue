@@ -35,7 +35,7 @@ onMounted(async () => {
     items.value = data.map(service => ({
       title: service.name,
       text: service.description || 'Descrição não disponível',
-      src: service.photo || '/src/assets/images/default-user.png', // <- Aqui está correto agora
+      src: service.photo || '/src/assets/images/default-user.png',
       duration: String(service.duration),
       professionals: (service.professionals || []).map(p => ({
         id: p.id,

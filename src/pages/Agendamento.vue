@@ -8,13 +8,10 @@
       <div
         v-for="service in services"
         :key="service.id"
-        @click="selectedServiceId = service.id"
-        :class="[
-          'cursor-pointer border rounded-lg p-4 w-56 text-center',
-          selectedServiceId === service.id ? 'bg-green-100 border-green-500 shadow-md' : 'bg-white hover:bg-gray-100'
-        ]"
+        @click="selectedService = service"
+        :class="[ 'cursor-pointer border rounded-lg p-4 w-56 text-center', selectedService?.id === service.id ? 'bg-green-100 border-green-500 shadow-md' : 'bg-white hover:bg-gray-100' ]"
       >
-        <img :src="service.image" class="w-20 h-20 mx-auto mb-2 rounded-full border" />
+        <img :src="service.photo" class="w-20 h-20 mx-auto mb-2 rounded-full border" :alt="'Imagem do serviço ' + service.name" />
         <h3 class="font-semibold">{{ service.name }}</h3>
         <p class="text-sm text-gray-600 mt-1">{{ service.description }}</p>
         <p class="text-xs text-gray-500 mt-2 justify-center">Duração: {{ service.duration }} min</p>
@@ -28,48 +25,44 @@
         <div
           v-for="prof in selectedService.professionals"
           :key="prof.id"
-          @click="selectedProfessionalId = prof.id"
-          :class="[
-            'cursor-pointer border rounded-lg p-4 w-48 text-center',
-            selectedProfessionalId === prof.id ? 'bg-blue-100 border-blue-500 shadow-md' : 'bg-white hover:bg-gray-100'
-          ]"
+          @click="selectedProfessional = prof"
+          :class="[ 'cursor-pointer border rounded-lg p-4 w-48 text-center', selectedProfessional?.id === prof.id ? 'bg-blue-100 border-blue-500 shadow-md' : 'bg-white hover:bg-gray-100' ]"
         >
-          <img :src="prof.src_img" class="w-20 h-20 mx-auto mb-2 rounded-full object-cover border" />
-          <p class="font-semibold">{{ prof.name }}</p>
+          <img :src="prof.photo || defaultImg" class="w-20 h-20 mx-auto mb-2 rounded-full object-cover border" :alt="'Imagem do profissional ' + prof.first_name" />
+          <p class="font-semibold">{{ prof.first_name }} {{ prof.last_name }}</p>
         </div>
       </div>
     </div>
 
     <!-- Formulário -->
     <div v-if="selectedProfessional" class="bg-white border rounded-lg shadow-md p-6 mt-6">
-        <label class="block mb-2 font-semibold">Data:</label>
-        <input type="date" v-model="form.start_date" class="w-full p-2 border mb-4 rounded" />
+      <label class="block mb-2 font-semibold">Data:</label>
+      <input type="date" v-model="form.start_date" class="w-full p-2 border mb-4 rounded" />
 
-        <label class="block mb-2 font-semibold">Hora:</label>
-        <select v-model="form.start_time" class="w-full p-2 border mb-6 rounded">
-            <option disabled value="">Selecione o horário</option>
-            <option v-for="time in availableTimes" :key="time">{{ time }}</option>
-        </select>
+      <label class="block mb-2 font-semibold">Hora:</label>
+      <select v-model="form.start_time" class="w-full p-2 border mb-6 rounded">
+        <option disabled value="">Selecione o horário</option>
+        <option v-for="time in availableTimes" :key="time" :value="time">{{ time }}</option>
+      </select>
 
-        <label class="block mb-2 font-semibold">Nome:</label>
-        <input v-model="form.customer_name" type="text" class="w-full p-2 border mb-4 rounded" />
+      <label class="block mb-2 font-semibold">Nome:</label>
+      <input v-model="form.customer_name" type="text" class="w-full p-2 border mb-4 rounded" />
 
-        <label class="block mb-2 font-semibold">Email:</label>
-        <input v-model="form.customer_email" type="email" class="w-full p-2 border mb-4 rounded" />
+      <label class="block mb-2 font-semibold">Email:</label>
+      <input v-model="form.customer_email" type="email" class="w-full p-2 border mb-4 rounded" />
 
-        <label class="block mb-2 font-semibold">Telefone:</label>
-        <input v-model="form.customer_phone" type="text" class="w-full p-2 border mb-6 rounded" />
+      <label class="block mb-2 font-semibold">Telefone:</label>
+      <input v-model="form.customer_phone" type="text" class="w-full p-2 border mb-6 rounded" />
 
-        <button
-          @click="submitSchedule"
-          class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300"
+      <button
+        @click="submitSchedule"
+        class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300"
+      >
+        Agendar
+      </button>
 
-        >
-          Agendar
-        </button>
-
-        <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
-        <p v-if="success" class="text-green-600 mt-4">Agendamento realizado com sucesso!</p>
+      <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
+      <p v-if="success" class="text-green-600 mt-4">Agendamento realizado com sucesso!</p>
     </div>
   </div>
 </template>
@@ -79,8 +72,8 @@ import { ref, computed, onMounted, watch } from 'vue'
 
 
 const services = ref([])
-const selectedServiceId = ref('')
-const selectedProfessionalId = ref('')
+const selectedService = ref(null)
+const selectedProfessional = ref(null)
 const availableTimes = ref([])
 const error = ref('')
 const success = ref(false)
@@ -94,14 +87,6 @@ const form = ref({
   customer_phone: ''
 })
 
-const selectedService = computed(() =>
-  services.value.find(s => s.id === selectedServiceId.value)
-)
-
-const selectedProfessional = computed(() =>
-  selectedService.value?.professionals.find(p => p.id === selectedProfessionalId.value)
-)
-
 const fetchSchedules = async () => {
   try {
     const res = await fetch('http://127.0.0.1:8000/api/schedules/')
@@ -113,7 +98,6 @@ const fetchSchedules = async () => {
 }
 
 const getAvailableTimes = () => {
-  
   const slots = []
   const start = 9 * 60
   const end = 19 * 60
@@ -127,7 +111,7 @@ const getAvailableTimes = () => {
   const occupied = allSchedules.value
     .filter(s =>
       s.start_date === form.value.start_date &&
-      s.employees?.id === selectedProfessionalId.value
+      s.employees?.id === selectedProfessional.value?.id
     )
     .map(s => s.start_time)
 
@@ -139,20 +123,7 @@ onMounted(async () => {
   try {
     const response = await fetch('http://127.0.0.1:8000/api/services/')
     const data = await response.json()
-    console.log('Serviços recebidos da API:', data)
-    const defaultImg = '/src/assets/images/default-user.png'
-    services.value = data.map(service => ({
-      id: service.id,
-      name: service.name,
-      description: service.description || '',
-      duration: service.duration || 0,
-      image: service.photo || defaultImg,
-      professionals: (service.professionals || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        src_img: p.src_img || defaultImg
-      }))
-    }))
+    services.value=data
   } catch (err) {
     error.value = 'Erro ao carregar serviços.'
     console.error(err)
@@ -160,16 +131,10 @@ onMounted(async () => {
 })
 
 watch(
-  [() => form.value.start_date, () => selectedProfessionalId.value],
+  [() => form.value.start_date, () => selectedProfessional.value?.id],
   () => {
-    if (form.value.start_date && selectedProfessionalId.value) {
-   //   availableTimes.value = getAvailableTimes()
-      console.log(getAvailableTimes())
-      fetch(`http://127.0.0.1:8000/api/schedules/available_hours/?employee_id=${selectedProfessionalId.value}&date=${form.value.start_date}`)
-      .then(response => response.json())
-      .then(data => {
-        availableTimes.value=data.available_hours
-      });
+    if (form.value.start_date && selectedProfessional.value) {
+      availableTimes.value = getAvailableTimes()
     } else {
       availableTimes.value = []
     }
@@ -202,8 +167,8 @@ const submitSchedule = async () => {
       body: JSON.stringify({
         start_date: form.value.start_date,
         start_time: form.value.start_time,
-        employee_id: selectedProfessionalId.value,
-        service_id: selectedServiceId.value,
+        employee_id: selectedProfessional.value.id,
+        service_id: selectedService.value.id,
         customer_name: form.value.customer_name,
         customer_email: form.value.customer_email,
         customer_phone: form.value.customer_phone
@@ -223,8 +188,8 @@ const submitSchedule = async () => {
       customer_email: '',
       customer_phone: ''
     }
-    selectedServiceId.value = ''
-    selectedProfessionalId.value = ''
+    selectedService.value = null
+    selectedProfessional.value = null
     availableTimes.value = []
 
     await fetchSchedules()

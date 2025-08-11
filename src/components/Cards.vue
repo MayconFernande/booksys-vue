@@ -3,7 +3,7 @@
     class="mx-auto transition-all duration-150 hover:scale-105 shadow-md"
     color="surface"
     max-width="250"
-    @click="toggleDetails"
+    
   >
     <v-img
       :src="props.src"

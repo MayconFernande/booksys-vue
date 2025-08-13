@@ -1,50 +1,56 @@
 <template>
-  <div>
-    <p class="text-5xl font-extrabold text-center uppercase tracking-wide 
-      text-gray-900 py-6 border-b-4 border-gray-400 w-fit mx-auto">
-      Serviços
-    </p>
+  <v-container class="py-6">
+    <v-row justify="center" align="stretch" dense>
+      <v-col
+        v-for="service in services"
+        :key="service.id"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+        <v-card class="mx-auto" elevation="2">
+          <v-img
+            :src="service.photo || defaultImg"
+            height="100px"
+            class="rounded-top"
+            :alt="'Imagem do serviço ' + service.name"
+            cover
+          ></v-img>
+          <v-card-title class="justify-center text-center">{{ service.name }}</v-card-title>
+          <v-card-text class="text-center">
+            <p class="text-sm text-gray-600 mb-2">{{ service.description }}</p>
+            <p class="text-xs text-gray-500">Duração: {{ service.duration }} min</p>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
 
-    <div class="flex flex-wrap justify-center gap-6 px-4 mb-12">
-      <div v-for="(item, i) in items" :key="i">
-        <Cards 
-          :title="item.title" 
-          :text="item.text" 
-          :src="item.src" 
-          :duration="item.duration" 
-          :professionals="item.professionals" 
-        />
-      </div>
-    </div>
-  </div>
+    <v-alert v-if="error" type="error" class="mt-4" dense text>
+      {{ error }}
+    </v-alert>
+  </v-container>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import Cards from '../components/Cards.vue'
 
-const items = ref([])
+const services = ref([])
+const error = ref('')
+const defaultImg = '/src/assets/images/default-service.png'
 
-onMounted(async () => {
+const fetchServices = async () => {
   try {
-    const response = await fetch('http://127.0.0.1:8000/api/services/')
-    if (!response.ok) throw new Error('Erro ao carregar os serviços')
-    
-    const data = await response.json()
-    
-    items.value = data.map(service => ({
-      title: service.name,
-      text: service.description || 'Descrição não disponível',
-      src: service.photo || '/src/assets/images/default-user.png',
-      duration: String(service.duration),
-      professionals: (service.professionals || []).map(p => ({
-        id: p.id,
-        name: p.name,
-        src_img: p.src_img || '/src/assets/images/default-user.png'
-      }))
-    }))
-  } catch (error) {
-    console.error('Erro ao buscar serviços:', error)
+    const res = await fetch('http://127.0.0.1:8000/api/services/')
+    if (!res.ok) throw new Error('Erro ao carregar os serviços')
+    services.value = await res.json()
+  } catch (err) {
+    console.error(err)
+    error.value = 'Erro ao carregar os serviços.'
   }
+}
+
+onMounted(() => {
+  fetchServices()
 })
 </script>

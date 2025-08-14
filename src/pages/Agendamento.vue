@@ -2,7 +2,7 @@
   <div class="max-w-5xl mx-auto p-4">
     <h1 class="text-3xl font-bold mb-6 text-center">Agendar Serviço</h1>
 
-    <Services :services="services" :selectedService="selectedService" @select="selectedService = $event" />
+    <Services :selectedService="selectedService" @select="selectedService = $event" />
     <Employees v-if="selectedService" :professionals="selectedService.professionals" :selectedProfessional="selectedProfessional" @select="selectedProfessional = $event" />
     <ScheduleForm v-if="selectedProfessional" :selectedService="selectedService" :selectedProfessional="selectedProfessional" :allSchedules="allSchedules" />
     
@@ -16,7 +16,6 @@ import Services from '../components/Services.vue'
 import Employees from '../components/Employees.vue'
 import ScheduleForm from '../components/ScheduleForm.vue'
 
-const services = ref([])
 const selectedService = ref(null)
 const selectedProfessional = ref(null)
 const allSchedules = ref([])
@@ -33,12 +32,5 @@ const fetchSchedules = async () => {
 
 onMounted(async () => {
   await fetchSchedules()
-  try {
-    const res = await fetch('http://127.0.0.1:8000/api/services/')
-    services.value = await res.json()
-  } catch (err) {
-    error.value = 'Erro ao carregar serviços.'
-    console.error(err)
-  }
 })
 </script>

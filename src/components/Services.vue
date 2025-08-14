@@ -21,9 +21,23 @@
 
 <script setup>
 import { defineProps } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
-  services: Array,
+ // services: Array,
   selectedService: Object
+})
+
+const services = ref([])
+const error = ref('')
+
+onMounted(async () => {
+  try {
+    const res = await fetch('http://127.0.0.1:8000/api/services/')
+    services.value = await res.json()
+  } catch (err) {
+    error.value = 'Erro ao carregar serviços.'
+    console.error(err)
+  }
 })
 </script>

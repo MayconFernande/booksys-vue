@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-3">
+  <div class="flex flex-col items-start gap-2 w-full">
     <!-- Telefone -->
     <v-btn
       v-if="info.phone"
@@ -8,10 +8,11 @@
       density="comfortable"
       variant="text"
       color="primary"
-      class="min-w-0"
+      class="min-w-0 justify-start"
       icon
     >
       <v-icon>mdi-phone</v-icon>
+      <span>{{ info.phone }}</span>
       <v-tooltip activator="parent" location="bottom">
         {{ info.phone }}
       </v-tooltip>
@@ -26,10 +27,11 @@
       density="comfortable"
       variant="text"
       color="primary"
-      class="min-w-0"
+      class="w-full justify-start px-2 py-1 text-xs sm:text-sm"
       icon
     >
       <v-icon>mdi-map-marker</v-icon>
+      <span>{{ info.address }}</span>
       <v-tooltip activator="parent" location="bottom">
         {{ info.address }}
       </v-tooltip>
@@ -41,10 +43,11 @@
       density="comfortable"
       variant="text"
       color="primary"
-      class="min-w-0"
+      class="min-w-0 justify-start"
       icon
     >
       <v-icon>mdi-clock-outline</v-icon>
+      <span>{{ horarioFormatado }}</span>
       <v-tooltip activator="parent" location="bottom">
         {{ horarioFormatado }}
       </v-tooltip>

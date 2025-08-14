@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border rounded-lg shadow-md p-6 mt-6" v-if="selectedProfessional">
+  <div class="bg-white border rounded-lg shadow-md p-6 mt-6">
     <label class="block mb-2 font-semibold">Data:</label>
     <input type="date" v-model="form.start_date" class="w-full p-2 border mb-4 rounded" />
 
@@ -28,11 +28,11 @@
 </template>
 
 <script setup>
-import { defineProps, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 const props = defineProps({
-  selectedProfessional: Object,
   selectedService: Object,
+  selectedProfessional: Object,
   allSchedules: Array
 })
 
@@ -43,22 +43,32 @@ const form = ref({
   customer_email: '',
   customer_phone: ''
 })
+const availableTimes = ref([])
 const error = ref('')
 const success = ref(false)
-const availableTimes = ref([])
 
-watch([() => form.value.start_date, () => props.selectedProfessional?.id], () => {
-  try {
-    const res = fetch(`http://127.0.0.1:8000/api/schedules/available_hours/?employee_id=${props.selectedProfessional.id}&date=${form.value.start_date}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log(data);
-      availableTimes.value = data.available_hours
-    })
-  } catch (err) {
-    console.log(err)
+const fetchAvailableTimes = async () => {
+  if (!props.selectedProfessional || !form.value.start_date) {
+    availableTimes.value = []
+    return
   }
-})
+
+  try {
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/schedules/available_hours/?employee_id=${props.selectedProfessional.id}&date=${form.value.start_date}`
+    )
+
+    if (!res.ok) throw new Error('Erro ao buscar horários')
+
+    const data = await res.json()
+    availableTimes.value = data.available_hours || []
+  } catch (err) {
+    console.error(err)
+    availableTimes.value = []
+  }
+}
+
+watch([() => form.value.start_date, () => props.selectedProfessional], fetchAvailableTimes)
 
 const submitSchedule = async () => {
   error.value = ''
@@ -98,7 +108,8 @@ const submitSchedule = async () => {
     }
 
     success.value = true
-    form.value = { start_date:'', start_time:'', customer_name:'', customer_email:'', customer_phone:'' }
+    form.value = { start_date: '', start_time: '', customer_name: '', customer_email: '', customer_phone: '' }
+    availableTimes.value = []
   } catch (err) {
     error.value = err.message
   }

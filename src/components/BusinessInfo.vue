@@ -1,58 +1,52 @@
 <template>
-  <div class="flex flex-col items-start gap-2 w-full">
+  <v-list dense nav class="pa-0">
     <!-- Telefone -->
-    <v-btn
+    <v-list-item
       v-if="info.phone"
       :href="`tel:${info.phone}`"
       target="_self"
-      density="comfortable"
-      variant="text"
-      color="primary"
-      class="min-w-0 justify-start"
-      icon
+      link
     >
-      <v-icon>mdi-phone</v-icon>
+      <template #prepend>
+        <v-icon>mdi-phone</v-icon>
+      </template>
       <span>{{ info.phone }}</span>
-      <v-tooltip activator="parent" location="bottom">
+      <v-tooltip location="bottom" activator="parent">
         {{ info.phone }}
       </v-tooltip>
-    </v-btn>
+    </v-list-item>
 
     <!-- Endereço -->
-    <v-btn
+    <v-list-item
       v-if="info.address"
       :href="googleMapsUrl"
       target="_blank"
       rel="noopener"
-      density="comfortable"
-      variant="text"
-      color="primary"
-      class="w-full justify-start px-2 py-1 text-xs sm:text-sm"
-      icon
+      link
     >
-      <v-icon>mdi-map-marker</v-icon>
+      
+        <v-icon>mdi-map-marker</v-icon>
+      
       <span>{{ info.address }}</span>
-      <v-tooltip activator="parent" location="bottom">
+      <v-tooltip location="bottom" activator="parent">
         {{ info.address }}
       </v-tooltip>
-    </v-btn>
+    </v-list-item>
 
     <!-- Horários -->
-    <v-btn
+    <v-list-item
       v-if="info.opening_time || info.closing_time"
-      density="comfortable"
-      variant="text"
-      color="primary"
-      class="min-w-0 justify-start"
-      icon
+      link
     >
-      <v-icon>mdi-clock-outline</v-icon>
+      <template #prepend>
+        <v-icon>mdi-clock-outline</v-icon>
+      </template>
       <span>{{ horarioFormatado }}</span>
-      <v-tooltip activator="parent" location="bottom">
+      <v-tooltip location="bottom" activator="parent">
         {{ horarioFormatado }}
       </v-tooltip>
-    </v-btn>
-  </div>
+    </v-list-item>
+  </v-list>
 </template>
 
 <script setup>
@@ -65,11 +59,7 @@ const info = ref({
   closing_time: null,
 })
 
-const twoDigits = (n) => String(n).padStart(2, '0')
-const hhmm = (t) => {
-  if (!t) return ''
-  return t.length >= 5 ? t.slice(0, 5) : t
-}
+const hhmm = (t) => (t ? t.slice(0, 5) : '')
 
 const horarioFormatado = computed(() => {
   const ab = hhmm(info.value.opening_time)
@@ -80,11 +70,11 @@ const horarioFormatado = computed(() => {
   return 'Horário não informado'
 })
 
-const googleMapsUrl = computed(() => {
-  if (!info.value.address) return '#'
-  const q = encodeURIComponent(info.value.address)
-  return `https://www.google.com/maps/search/?api=1&query=${q}`
-})
+const googleMapsUrl = computed(() =>
+  info.value.address
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(info.value.address)}`
+    : '#'
+)
 
 onMounted(async () => {
   try {

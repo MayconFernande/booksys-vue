@@ -1,13 +1,19 @@
 <template>
-  <div class="max-w-5xl mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6 text-center">Agendar Serviço</h1>
+  <v-container class="py-10" fluid>
+    <v-row justify="center">
+      <v-col cols="12" md="8">
+        <h1 class="text-h4 font-weight-bold text-center mb-6">
+          Agendar Serviço
+        </h1>
 
-    <Services :selectedService="selectedService" @select="selectedService = $event" />
-    <Employees v-if="selectedService" :professionals="selectedService.professionals" :selectedProfessional="selectedProfessional" @select="selectedProfessional = $event" />
-    <ScheduleForm v-if="selectedProfessional" :selectedService="selectedService" :selectedProfessional="selectedProfessional" :allSchedules="allSchedules" />
-    
-    <p v-if="error" class="text-red-500 mt-4 text-center">{{ error }}</p>
-  </div>
+        <!-- Componentes do agendamento -->
+        <Services :selectedService="selectedService" @select="selectedService = $event" />
+        <Employees v-if="selectedService" :professionals="selectedService.professionals" :selectedProfessional="selectedProfessional" @select="selectedProfessional = $event"/>
+        <ScheduleForm v-if="selectedProfessional" :selectedService="selectedService" :selectedProfessional="selectedProfessional" :allSchedules="allSchedules"/>
+        <p v-if="error" class="error--text text-center mt-4">{{ error }}</p>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>
@@ -27,6 +33,7 @@ const fetchSchedules = async () => {
     allSchedules.value = await res.json()
   } catch (err) {
     console.error(err)
+    error.value = 'Erro ao carregar horários.'
   }
 }
 

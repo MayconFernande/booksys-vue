@@ -1,22 +1,28 @@
 <template>
-  <div v-if="professionals.length">
-    <div class="flex flex-wrap gap-4 mb-6 justify-center">
-      <div
+  <v-container v-if="professionals.length" class="py-4">
+    <v-row dense justify="center" align="stretch" class="gap-4">
+      <v-col
         v-for="prof in professionals"
         :key="prof.id"
-        @click="$emit('select', prof)"
-        :class="[
-          'cursor-pointer border rounded-lg p-4 w-48 text-center',
-          selectedProfessional?.id === prof.id
-            ? 'bg-blue-100 border-blue-500 shadow-md'
-            : 'bg-white hover:bg-gray-100'
-        ]"
+        cols="auto"
+        class="d-flex"
       >
-        <img :src="prof.photo || defaultImg" class="w-20 h-20 mx-auto mb-2 rounded-full object-cover border" :alt="'Imagem do profissional ' + prof.first_name" />
-        <p class="font-semibold">{{ prof.first_name }} {{ prof.last_name }}</p>
-      </div>
-    </div>
-  </div>
+        <v-card
+          :elevation="selectedProfessional?.id === prof.id ? 8 : 2"
+          class="pa-4 text-center cursor-pointer"
+          :color="selectedProfessional?.id === prof.id ? 'grey lighten-4' : 'white'"
+          @click="$emit('select', prof)"
+        >
+          <v-avatar size="80" class="mx-auto mb-2">
+            <v-img :src="prof.photo || defaultImg" :alt="'Imagem do profissional ' + prof.first_name" />
+          </v-avatar>
+          <div class="font-weight-medium">
+            {{ prof.first_name }} {{ prof.last_name }}
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script setup>

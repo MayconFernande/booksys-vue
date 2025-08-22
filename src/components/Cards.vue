@@ -1,18 +1,17 @@
 <template>
   <v-card
-    class="mx-auto transition-all duration-150 hover:scale-105 shadow-md"
+    class="mx-auto transition-all duration-75 hover:scale-20 shadow-md"
     color="surface"
-    max-width="250"
+    max-width="100"
     
   >
     <v-img
       :src="props.src"
-      height="100px"
+      height="50x"
       cover
-      class="rounded-t-lg"
     ></v-img>
 
-    <v-card-title class="text-lg font-bold text-gray-900">
+    <v-card-title class="text-lg font-bold text-gray-900 ">
       {{ props.title }}
     </v-card-title>
 

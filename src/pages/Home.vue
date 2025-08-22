@@ -1,6 +1,14 @@
 <template>
-  <div class="text-center py-10">
-    <h1 class="text-4xl font-bold text-gray-800">Bem-vindo ao BookSys!</h1>
-    <p class="mt-4 text-lg text-gray-600">Seu estúdio de beleza moderno.</p>
-  </div>
+  <v-container class="py-10" fluid>
+    <v-row justify="center">
+      <v-col cols="12" md="8" class="text-center">
+        <h1 class="text-h3 font-weight-bold">
+          Bem-vindo ao BookSys!
+        </h1>
+        <p class="text-subtitle-1 mt-4">
+          Seu estúdio de beleza moderno.
+        </p>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

@@ -1,30 +1,90 @@
 <template>
-  <div class="bg-white border rounded-lg shadow-md p-6 mt-6">
-    <label class="block mb-2 font-semibold">Data:</label>
-    <input type="date" v-model="form.start_date" class="w-full p-2 border mb-4 rounded" />
+  <v-card class="pa-6 mt-6" outlined>
+    <!-- Data -->
+    <v-menu
+      v-model="menu"
+      :close-on-content-click="false"
+      transition="scale-transition"
+      offset-y
+    >
+      <template #activator="{ props: menuProps }">
+        <v-text-field
+          v-model="form.start_date"
+          label="Data"
+          readonly
+          v-bind="menuProps"
+        ></v-text-field>
+      </template>
+      <v-date-picker
+        v-model="form.start_date"
+        @update:model-value="menu = false"
+        no-title
+      ></v-date-picker>
+    </v-menu>
 
-    <label class="block mb-2 font-semibold">Hora:</label>
-    <select v-model="form.start_time" class="w-full p-2 border mb-6 rounded">
-      <option disabled value="">Selecione o horário</option>
-      <option v-for="time in availableTimes" :key="time" :value="time">{{ time }}</option>
-    </select>
+    <!-- Horário -->
+    <v-select
+      v-model="form.start_time"
+      :items="availableTimes"
+      label="Hora"
+      :disabled="!availableTimes.length"
+      class="mt-4"
+    ></v-select>
 
-    <label class="block mb-2 font-semibold">Nome:</label>
-    <input v-model="form.customer_name" type="text" class="w-full p-2 border mb-4 rounded" />
+    <!-- Nome -->
+    <v-text-field
+      v-model="form.customer_name"
+      label="Nome"
+      class="mt-4"
+    ></v-text-field>
 
-    <label class="block mb-2 font-semibold">Email:</label>
-    <input v-model="form.customer_email" type="email" class="w-full p-2 border mb-4 rounded" />
+    <!-- Email -->
+    <v-text-field
+      v-model="form.customer_email"
+      label="Email"
+      type="email"
+      class="mt-4"
+    ></v-text-field>
 
-    <label class="block mb-2 font-semibold">Telefone:</label>
-    <input v-model="form.customer_phone" type="text" class="w-full p-2 border mb-6 rounded" />
+    <!-- Telefone -->
+    <v-text-field
+      v-model="form.customer_phone"
+      label="Telefone"
+      class="mt-4"
+    ></v-text-field>
 
-    <button @click="submitSchedule" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-6 rounded-full shadow-lg transition duration-300">
+    <!-- Botão -->
+    <v-btn
+      class="mt-6"
+      color="primary"
+      @click="submitSchedule"
+    >
       Agendar
-    </button>
+    </v-btn>
 
-    <p v-if="error" class="text-red-500 mt-4">{{ error }}</p>
-    <p v-if="success" class="text-green-600 mt-4">Agendamento realizado com sucesso!</p>
-  </div>
+    <!-- Mensagens -->
+    <v-alert
+      v-if="error"
+      type="error"
+      class="mt-4"
+      dense
+      border="start"
+      colored-border
+    >
+      {{ error }}
+    </v-alert>
+
+    <v-alert
+      v-if="success"
+      type="success"
+      class="mt-4"
+      dense
+      border="start"
+      colored-border
+    >
+      Agendamento realizado com sucesso!
+    </v-alert>
+  </v-card>
 </template>
 
 <script setup>
@@ -37,25 +97,40 @@ const props = defineProps({
 })
 
 const form = ref({
-  start_date: '',
+  start_date: '', // vai conter YYYY-MM-DD
   start_time: '',
   customer_name: '',
   customer_email: '',
   customer_phone: ''
 })
+
 const availableTimes = ref([])
 const error = ref('')
 const success = ref(false)
+const menu = ref(false)
 
+const formatDateForAPI = (date) => {
+  if (!date) return ''
+  if (typeof date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(date)) return date
+  const d = new Date(date)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+// Buscar horários disponíveis
 const fetchAvailableTimes = async () => {
-  if (!props.selectedProfessional || !form.value.start_date) {
-    availableTimes.value = []
-    return
-  }
+  error.value = ''
+  availableTimes.value = []
+
+  if (!props.selectedProfessional || !form.value.start_date) return
 
   try {
+    const dateFormatted = formatDateForAPI(form.value.start_date)
+
     const res = await fetch(
-      `http://127.0.0.1:8000/api/schedules/available_hours/?employee_id=${props.selectedProfessional.id}&date=${form.value.start_date}`
+      `http://127.0.0.1:8000/api/schedules/available_hours/?employee_id=${props.selectedProfessional.id}&date=${dateFormatted}`
     )
 
     if (!res.ok) throw new Error('Erro ao buscar horários')
@@ -64,11 +139,14 @@ const fetchAvailableTimes = async () => {
     availableTimes.value = data.available_hours || []
   } catch (err) {
     console.error(err)
-    availableTimes.value = []
+    error.value = 'Erro ao buscar horários disponíveis.'
   }
 }
 
-watch([() => form.value.start_date, () => props.selectedProfessional], fetchAvailableTimes)
+watch(
+  [() => form.value.start_date, () => props.selectedProfessional],
+  fetchAvailableTimes
+)
 
 const submitSchedule = async () => {
   error.value = ''
@@ -88,11 +166,13 @@ const submitSchedule = async () => {
   }
 
   try {
+    const dateFormatted = formatDateForAPI(form.value.start_date)
+
     const res = await fetch('http://127.0.0.1:8000/api/schedules/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        start_date: form.value.start_date,
+        start_date: dateFormatted,
         start_time: form.value.start_time,
         employee_id: props.selectedProfessional.id,
         service_id: props.selectedService.id,

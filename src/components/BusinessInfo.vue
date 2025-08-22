@@ -1,52 +1,48 @@
 <template>
-  <v-list dense nav class="pa-0">
-    <!-- Telefone -->
-    <v-list-item
-      v-if="info.phone"
-      :href="`tel:${info.phone}`"
-      target="_self"
-      link
-    >
-      <template #prepend>
-        <v-icon>mdi-phone</v-icon>
-      </template>
-      <span>{{ info.phone }}</span>
-      <v-tooltip location="bottom" activator="parent">
-        {{ info.phone }}
-      </v-tooltip>
-    </v-list-item>
+  <v-sheet color="primary text--wite" class="pa-4 ">
+    <v-list dense nav class="bg-primary white--text pa-0">
+      <v-list-item
+        v-if="info.phone"
+        :href="`tel:${info.phone}`"
+        target="_self"
+        link
+        class="bg-transparent"
+      >
+        <v-icon class="me-2 white--text">mdi-phone</v-icon>
+        <span>{{ info.phone }}</span>
+        <v-tooltip location="bottom" activator="parent">
+          {{ info.phone }}
+        </v-tooltip>
+      </v-list-item>
 
-    <!-- Endereço -->
-    <v-list-item
-      v-if="info.address"
-      :href="googleMapsUrl"
-      target="_blank"
-      rel="noopener"
-      link
-    >
-      
-        <v-icon>mdi-map-marker</v-icon>
-      
-      <span>{{ info.address }}</span>
-      <v-tooltip location="bottom" activator="parent">
-        {{ info.address }}
-      </v-tooltip>
-    </v-list-item>
+      <v-list-item
+        v-if="info.address"
+        :href="googleMapsUrl"
+        target="_blank"
+        rel="noopener"
+        link
+        class="bg-transparent"
+      >
+        <v-icon class="me-2 white--text">mdi-map-marker</v-icon>
+        <span>{{ info.address }}</span>
+        <v-tooltip location="bottom" activator="parent">
+          {{ info.address }}
+        </v-tooltip>
+      </v-list-item>
 
-    <!-- Horários -->
-    <v-list-item
-      v-if="info.opening_time || info.closing_time"
-      link
-    >
-      <template #prepend>
-        <v-icon>mdi-clock-outline</v-icon>
-      </template>
-      <span>{{ horarioFormatado }}</span>
-      <v-tooltip location="bottom" activator="parent">
-        {{ horarioFormatado }}
-      </v-tooltip>
-    </v-list-item>
-  </v-list>
+      <v-list-item
+        v-if="info.opening_time || info.closing_time"
+        link
+        class="bg-transparent"
+      >
+        <v-icon class="me-2 white--text">mdi-clock-outline</v-icon>
+        <span>{{ horarioFormatado }}</span>
+        <v-tooltip location="bottom" activator="parent">
+          {{ horarioFormatado }}
+        </v-tooltip>
+      </v-list-item>
+    </v-list>
+  </v-sheet>
 </template>
 
 <script setup>

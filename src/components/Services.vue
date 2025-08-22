@@ -1,30 +1,47 @@
 <template>
-  <div class="flex flex-wrap gap-4 mb-6 justify-center">
-    <div
+  <v-row class="mb-6" justify="center" align="stretch" dense>
+    <v-col
       v-for="service in services"
       :key="service.id"
-      @click="$emit('select', service)"
-      :class="[
-        'cursor-pointer border rounded-lg p-4 w-56 text-center',
-        selectedService?.id === service.id
-          ? 'bg-green-100 border-green-500 shadow-md'
-          : 'bg-white hover:bg-gray-100'
-      ]"
+      cols="18"
+      sm="12"
+      md="4"
+      lg="3"
     >
-      <img :src="service.photo" class="w-20 h-20 mx-auto mb-2 rounded-full border" :alt="'Imagem do serviço ' + service.name" />
-      <h3 class="font-semibold">{{ service.name }}</h3>
-      <p class="text-sm text-gray-600 mt-1">{{ service.description }}</p>
-      <p class="text-xs text-gray-500 mt-2">Duração: {{ service.duration }} min</p>
-    </div>
-  </div>
+      <v-card
+        :elevation="selectedService?.id === service.id ? 8 : 2"
+        :color="selectedService?.id === service.id ? 'grey lighten-4' : 'white'"
+        class="cursor-pointer text-center"
+        @click="$emit('select', service)"
+      >
+        <v-img
+          :src="service.photo"
+          height="100"
+          width="150"
+          class="mx-auto my-6 rounded-circle"
+          :alt="'Imagem do serviço ' + service.name"
+        ></v-img>
+
+        <v-card-title class="justify-center font-weight-medium">
+          {{ service.name }}
+        </v-card-title>
+
+        <v-card-text class="text-body-2 text--secondary">
+          {{ service.description }}
+        </v-card-text>
+
+        <v-card-text class="text-caption mt-2">
+          Duração: {{ service.duration }} min
+        </v-card-text>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
 import { ref, onMounted } from 'vue'
 
 const props = defineProps({
- // services: Array,
   selectedService: Object
 })
 

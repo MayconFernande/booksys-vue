@@ -9,16 +9,15 @@
       lg="3"
     >
       <v-card
+        class="mx-auto"
+        max-width="344"
         :elevation="selectedService?.id === service.id ? 8 : 2"
         :color="selectedService?.id === service.id ? 'grey lighten-4' : 'white'"
-        class="cursor-pointer text-center"
-        @click="$emit('select', service)"
       >
         <v-img
           :src="service.photo"
-          height="100"
-          width="150"
-          class="mx-auto my-6 rounded-circle"
+          height="200px"
+          cover
           :alt="'Imagem do serviço ' + service.name"
         ></v-img>
 
@@ -26,20 +25,43 @@
           {{ service.name }}
         </v-card-title>
 
-        <v-card-text class="text-body-2 text--secondary">
-          {{ service.description }}
-        </v-card-text>
+        <v-card-subtitle class="text-body-2 text--secondary">
+          {{ service.shortDescription || 'Serviço disponível' }}
+        </v-card-subtitle>
 
-        <v-card-text class="text-caption mt-2">
-          Duração: {{ service.duration }} min
-        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" text @click="$emit('select', service)">
+            Selecionar
+          </v-btn>
+
+          <v-spacer></v-spacer>
+
+          <v-btn
+            :icon="show[service.id] ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+            @click="toggleShow(service.id)"
+          ></v-btn>
+        </v-card-actions>
+
+        <v-expand-transition>
+          <div v-show="show[service.id]">
+            <v-divider></v-divider>
+
+            <v-card-text>
+              {{ service.description }}
+            </v-card-text>
+
+            <v-card-text class="text-caption mt-2">
+              <strong>Duração:</strong> {{ service.duration }} min
+            </v-card-text>
+          </div>
+        </v-expand-transition>
       </v-card>
     </v-col>
   </v-row>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 
 const props = defineProps({
   selectedService: Object
@@ -47,6 +69,11 @@ const props = defineProps({
 
 const services = ref([])
 const error = ref('')
+const show = reactive({})
+
+const toggleShow = (id) => {
+  show[id] = !show[id]
+}
 
 onMounted(async () => {
   try {

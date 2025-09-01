@@ -1,4 +1,3 @@
-<!-- src/components/Social.vue -->
 <template>
   <div class="flex gap-3">
     <v-btn v-if="social.whatsapp" :href="social.whatsapp" target="_blank" icon color="green">

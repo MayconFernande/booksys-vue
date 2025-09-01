@@ -38,9 +38,6 @@
 
         
         <v-col cols="12" md="4" class="d-flex flex-column md:align-end">
-          <router-link to="/" class="text-white text-decoration-none mb-2">Início</router-link>
-          <router-link to="/sobre" class="text-white text-decoration-none mb-2">Sobre Nós</router-link>
-          <router-link to="/contato" class="text-white text-decoration-none mb-2">Localização</router-link>
           <router-link to="/politica-de-privacidade" class="text-white text-decoration-none">Política de Privacidade</router-link>
         </v-col>
       </v-row>

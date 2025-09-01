@@ -5,8 +5,6 @@
         <h1 class="text-h4 font-weight-bold text-center mb-6">
           Agendar Serviço
         </h1>
-
-        <!-- Componentes do agendamento -->
         <Services :selectedService="selectedService" @select="selectedService = $event" />
         <Employees v-if="selectedService" :professionals="selectedService.professionals" :selectedProfessional="selectedProfessional" @select="selectedProfessional = $event"/>
         <ScheduleForm v-if="selectedProfessional" :selectedService="selectedService" :selectedProfessional="selectedProfessional" :allSchedules="allSchedules"/>

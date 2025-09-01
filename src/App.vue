@@ -1,9 +1,3 @@
-<script setup>
-import NavBar from './components/NavBar.vue'
-import CookieConsent from './components/CookieConsent.vue'
-import Footer from './components/Footer.vue'
-</script>
-
 <template>
   <v-app>
     <NavBar />
@@ -16,3 +10,9 @@ import Footer from './components/Footer.vue'
     <Footer />
   </v-app>
 </template>
+
+<script setup>
+import NavBar from './components/NavBar.vue'
+import CookieConsent from './components/CookieConsent.vue'
+import Footer from './components/Footer.vue'
+</script>
